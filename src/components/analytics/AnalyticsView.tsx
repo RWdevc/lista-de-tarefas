@@ -47,22 +47,22 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
     .slice(0, 5);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in text-slate-100">
       {/* Header da Seção de Análises */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <BarChart2 className="w-5 h-5 text-indigo-600" />
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <BarChart2 className="w-5 h-5 text-indigo-400" />
             <span>Painel de Análises e Produtividade</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Acompanhe o desempenho, categorização e taxa de conclusão das suas atividades.
+          <p className="text-xs text-slate-400 mt-0.5">
+            Métricas de desempenho, categorização e taxa de conclusão das suas atividades sincronizadas.
           </p>
         </div>
 
         <button
           onClick={onOpenNewTask}
-          className="self-start sm:self-auto px-3.5 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-200 transition-colors"
+          className="self-start sm:self-auto px-3.5 py-1.5 text-xs font-semibold text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/25 rounded-xl border border-indigo-500/30 transition-colors"
         >
           + Adicionar Nova Tarefa
         </button>
@@ -71,42 +71,42 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
       {/* Grid de Cards de Destaque */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Taxa Geral */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-soft">
+        <div className="glass-card p-5 rounded-2xl border border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Taxa de Conclusão
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
               <Award className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-slate-900">{completionRate}%</span>
-            <span className="text-xs text-emerald-600 font-semibold">
+            <span className="text-3xl font-extrabold text-white">{completionRate}%</span>
+            <span className="text-xs text-emerald-400 font-semibold">
               {completed} de {total} tarefas
             </span>
           </div>
-          <div className="mt-3 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+          <div className="mt-3 w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-white/5">
             <div
-              className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full transition-all duration-500"
               style={{ width: `${completionRate}%` }}
             />
           </div>
         </div>
 
         {/* Foco Pendente */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-soft">
+        <div className="glass-card p-5 rounded-2xl border border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Tarefas Ativas
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-slate-900">{pending}</span>
-            <span className="text-xs text-amber-600 font-medium">aguardando finalização</span>
+            <span className="text-3xl font-extrabold text-white">{pending}</span>
+            <span className="text-xs text-amber-400 font-medium">aguardando finalização</span>
           </div>
           <p className="text-xs text-slate-400 mt-3">
             {priorityCounts.ALTA} com prioridade alta requerem atenção imediata.
@@ -114,23 +114,23 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
         </div>
 
         {/* Produtividade & Ritmo */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-soft">
+        <div className="glass-card p-5 rounded-2xl border border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Nível de Produtividade
             </span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
               <Flame className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-extrabold text-indigo-600">
+            <span className="text-2xl font-extrabold text-indigo-400">
               {completionRate >= 70 ? 'Excelente 🔥' : completionRate >= 40 ? 'Constante ⚡' : 'Iniciando 🎯'}
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-3">
+          <p className="text-xs text-slate-400 mt-3">
             {completionRate >= 70
-              ? 'Ótimo ritmo! Você está mantendo a maioria das tarefas em dia.'
+              ? 'Ótimo ritmo! Você está mantendo a maioria das tarefas em dia no Supabase.'
               : 'Continue avançando nas pendências para alcançar suas metas semanais.'}
           </p>
         </div>
@@ -139,10 +139,10 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
       {/* Seção com Gráficos e Distribuições */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Distribuição por Categoria */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-soft">
+        <div className="glass-card p-6 rounded-3xl border border-white/10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <Target className="w-4 h-4 text-indigo-600" />
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Target className="w-4 h-4 text-indigo-400" />
               <span>Desempenho por Categoria</span>
             </h3>
             <span className="text-xs text-slate-400 font-medium">{Object.keys(categoryCounts).length} categorias</span>
@@ -150,7 +150,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
 
           <div className="space-y-4">
             {Object.keys(categoryCounts).length === 0 ? (
-              <p className="text-xs text-slate-400 py-6 text-center">Nenhuma categoria registrada.</p>
+              <p className="text-xs text-slate-500 py-6 text-center">Nenhuma categoria registrada.</p>
             ) : (
               Object.entries(categoryCounts).map(([catName, stats]) => {
                 const catRate = Math.round((stats.completed / stats.total) * 100);
@@ -158,13 +158,13 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
                   <div key={catName} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <CategoryBadge category={catName} size="sm" />
-                      <span className="text-slate-600 font-semibold">
+                      <span className="text-slate-300 font-semibold">
                         {stats.completed}/{stats.total} ({catRate}%)
                       </span>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-white/5">
                       <div
-                        className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+                        className="bg-indigo-500 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${catRate}%` }}
                       />
                     </div>
@@ -176,54 +176,54 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ tasks, onOpenNewTa
         </div>
 
         {/* Distribuição por Nível de Prioridade */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-soft">
+        <div className="glass-card p-6 rounded-3xl border border-white/10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-indigo-600" />
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <PieChart className="w-4 h-4 text-indigo-400" />
               <span>Distribuição por Prioridade</span>
             </h3>
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="p-3 rounded-2xl bg-rose-50/70 border border-rose-100 text-center">
-              <span className="text-[11px] font-bold text-rose-700 uppercase block">Alta</span>
-              <span className="text-2xl font-bold text-rose-600">{priorityCounts.ALTA}</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">tarefas</span>
+            <div className="p-3 rounded-2xl bg-rose-950/50 border border-rose-500/30 text-center">
+              <span className="text-[11px] font-bold text-rose-300 uppercase block">Alta</span>
+              <span className="text-2xl font-bold text-rose-400">{priorityCounts.ALTA}</span>
+              <span className="text-[10px] text-slate-400 block mt-0.5">tarefas</span>
             </div>
 
-            <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-100 text-center">
-              <span className="text-[11px] font-bold text-amber-700 uppercase block">Média</span>
-              <span className="text-2xl font-bold text-amber-600">{priorityCounts.MÉDIA}</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">tarefas</span>
+            <div className="p-3 rounded-2xl bg-amber-950/50 border border-amber-500/30 text-center">
+              <span className="text-[11px] font-bold text-amber-300 uppercase block">Média</span>
+              <span className="text-2xl font-bold text-amber-400">{priorityCounts.MÉDIA}</span>
+              <span className="text-[10px] text-slate-400 block mt-0.5">tarefas</span>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-100/70 border border-slate-200 text-center">
-              <span className="text-[11px] font-bold text-slate-700 uppercase block">Baixa</span>
-              <span className="text-2xl font-bold text-slate-700">{priorityCounts.BAIXA}</span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">tarefas</span>
+            <div className="p-3 rounded-2xl bg-slate-900/60 border border-white/10 text-center">
+              <span className="text-[11px] font-bold text-slate-300 uppercase block">Baixa</span>
+              <span className="text-2xl font-bold text-slate-200">{priorityCounts.BAIXA}</span>
+              <span className="text-[10px] text-slate-400 block mt-0.5">tarefas</span>
             </div>
           </div>
 
           {/* Próximos Vencimentos */}
           <div>
-            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
               Próximos Prazos
             </h4>
             {upcomingTasks.length === 0 ? (
-              <p className="text-xs text-slate-400 py-2">Nenhuma tarefa pendente com prazo próximo.</p>
+              <p className="text-xs text-slate-500 py-2">Nenhuma tarefa pendente com prazo próximo.</p>
             ) : (
               <div className="space-y-2">
                 {upcomingTasks.map((t) => (
                   <div
                     key={t.id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs"
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-white/10 text-xs"
                   >
-                    <span className="font-semibold text-slate-800 truncate max-w-[200px]">
+                    <span className="font-semibold text-slate-200 truncate max-w-[200px]">
                       {t.title}
                     </span>
                     <div className="flex items-center gap-2">
                       <PriorityBadge priority={t.priority} size="sm" />
-                      <span className="text-slate-500 font-mono text-[11px]">{t.due_date}</span>
+                      <span className="text-slate-400 font-mono text-[11px]">{t.due_date}</span>
                     </div>
                   </div>
                 ))}

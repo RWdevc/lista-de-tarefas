@@ -4,6 +4,7 @@ export type Category = 'TRABALHO' | 'PESSOAL' | 'ESTUDO' | 'FINANÇAS' | 'SAÚDE
 
 export interface Task {
   id: string;
+  user_id?: string;
   title: string;
   description?: string;
   category: Category;

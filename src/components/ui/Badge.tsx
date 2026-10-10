@@ -9,33 +9,33 @@ interface CategoryBadgeProps {
 export const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, size = 'md' }) => {
   const normalized = (category || '').toUpperCase().trim();
 
-  let colorClasses = 'bg-slate-100 text-slate-700 border-slate-200';
+  let colorClasses = 'bg-slate-800/80 text-slate-300 border-slate-700/60';
   let dotColor = 'bg-slate-400';
 
   if (normalized === 'TRABALHO') {
-    colorClasses = 'bg-blue-50 text-blue-700 border-blue-200/80';
-    dotColor = 'bg-blue-500';
+    colorClasses = 'bg-blue-950/60 text-blue-300 border-blue-500/40';
+    dotColor = 'bg-blue-400';
   } else if (normalized === 'PESSOAL') {
-    colorClasses = 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
-    dotColor = 'bg-emerald-500';
+    colorClasses = 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40';
+    dotColor = 'bg-emerald-400';
   } else if (normalized === 'ESTUDO' || normalized === 'ESTUDOS') {
-    colorClasses = 'bg-amber-50 text-amber-700 border-amber-200/80';
-    dotColor = 'bg-amber-500';
+    colorClasses = 'bg-amber-950/60 text-amber-300 border-amber-500/40';
+    dotColor = 'bg-amber-400';
   } else if (normalized === 'FINANÇAS' || normalized === 'FINANCAS') {
-    colorClasses = 'bg-violet-50 text-violet-700 border-violet-200/80';
-    dotColor = 'bg-violet-500';
+    colorClasses = 'bg-purple-950/60 text-purple-300 border-purple-500/40';
+    dotColor = 'bg-purple-400';
   } else if (normalized === 'SAÚDE' || normalized === 'SAUDE') {
-    colorClasses = 'bg-teal-50 text-teal-700 border-teal-200/80';
-    dotColor = 'bg-teal-500';
+    colorClasses = 'bg-teal-950/60 text-teal-300 border-teal-500/40';
+    dotColor = 'bg-teal-400';
   }
 
-  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs font-semibold' : 'px-2.5 py-1 text-xs font-semibold';
+  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[11px] font-semibold' : 'px-2.5 py-1 text-xs font-semibold';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border tracking-wide uppercase transition-all ${colorClasses} ${sizeClasses}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg border tracking-wide uppercase transition-all backdrop-blur-sm ${colorClasses} ${sizeClasses}`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+      <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shadow-sm`} />
       {category}
     </span>
   );
@@ -49,27 +49,27 @@ interface PriorityBadgeProps {
 export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, size = 'md' }) => {
   const normalized = (priority || '').toUpperCase().trim();
 
-  let colorClasses = 'bg-slate-100 text-slate-600 border-slate-200';
+  let colorClasses = 'bg-slate-800/80 text-slate-300 border-slate-700/60';
   let dotColor = 'bg-slate-400';
 
   if (normalized === 'ALTA') {
-    colorClasses = 'bg-rose-50 text-rose-700 border-rose-200/80';
-    dotColor = 'bg-rose-500';
+    colorClasses = 'bg-rose-950/60 text-rose-300 border-rose-500/40';
+    dotColor = 'bg-rose-400';
   } else if (normalized === 'MÉDIA' || normalized === 'MEDIA') {
-    colorClasses = 'bg-amber-50 text-amber-700 border-amber-200/80';
-    dotColor = 'bg-amber-500';
+    colorClasses = 'bg-amber-950/60 text-amber-300 border-amber-500/40';
+    dotColor = 'bg-amber-400';
   } else if (normalized === 'BAIXA') {
-    colorClasses = 'bg-slate-100 text-slate-600 border-slate-200';
+    colorClasses = 'bg-slate-800/70 text-slate-300 border-slate-700/50';
     dotColor = 'bg-slate-400';
   }
 
-  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs font-semibold' : 'px-2.5 py-1 text-xs font-semibold';
+  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[11px] font-semibold' : 'px-2.5 py-1 text-xs font-semibold';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border tracking-wide uppercase transition-all ${colorClasses} ${sizeClasses}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg border tracking-wide uppercase transition-all backdrop-blur-sm ${colorClasses} ${sizeClasses}`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+      <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shadow-sm`} />
       {priority}
     </span>
   );

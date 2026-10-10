@@ -6,6 +6,7 @@ import { Checkbox } from '../ui/Checkbox';
 
 interface TaskCardProps {
   task: Task;
+  index?: number;
   onToggle: (id: string, completed: boolean) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
@@ -13,6 +14,7 @@ interface TaskCardProps {
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
+  index = 0,
   onToggle,
   onEdit,
   onDelete,
@@ -75,13 +77,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const overdue = isOverdue();
+  const delayMs = Math.min(index * 45, 600);
 
   return (
     <div
-      className={`group relative flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all duration-200 bg-white ${
+      style={{ animationDelay: `${delayMs}ms` }}
+      className={`group relative flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all duration-300 animate-stagger-item ${
         task.completed
-          ? 'opacity-60 bg-slate-50/70 border-slate-200/60 shadow-none'
-          : 'border-slate-200/90 shadow-soft hover:border-indigo-200 hover:shadow-card-hover'
+          ? 'opacity-55 bg-slate-900/40 border-white/5 shadow-none'
+          : 'glass-card glass-card-hover border-white/10 hover:border-indigo-500/40'
       }`}
     >
       {/* Lado Esquerdo: Checkbox + Conteúdo */}
@@ -102,7 +106,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <CategoryBadge category={task.category} size="sm" />
             <PriorityBadge priority={task.priority} size="sm" />
             {overdue && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200/80">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-400 bg-rose-950/60 px-2 py-0.5 rounded-lg border border-rose-500/40">
                 <AlertCircle className="w-3 h-3" />
                 Atrasada
               </span>
@@ -114,8 +118,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             onClick={() => onToggle(task.id, !task.completed)}
             className={`text-base font-semibold cursor-pointer transition-all duration-200 leading-snug break-words ${
               task.completed
-                ? 'line-through text-slate-400 font-normal'
-                : 'text-slate-800 hover:text-indigo-600'
+                ? 'line-through text-slate-500 font-normal'
+                : 'text-slate-100 hover:text-indigo-400'
             }`}
           >
             {task.title}
@@ -124,8 +128,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {/* Descrição opcional */}
           {task.description && (
             <p
-              className={`text-xs mt-1 text-slate-500 line-clamp-2 leading-relaxed ${
-                task.completed ? 'line-through text-slate-400' : ''
+              className={`text-xs mt-1 leading-relaxed ${
+                task.completed ? 'line-through text-slate-600' : 'text-slate-400'
               }`}
             >
               {task.description}
@@ -133,10 +137,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           )}
 
           {/* Exibição da data de vencimento com ícone de calendário */}
-          <div className="flex items-center gap-4 mt-2.5 text-xs text-slate-500">
+          <div className="flex items-center gap-4 mt-2.5 text-xs">
             <div
               className={`inline-flex items-center gap-1.5 font-medium ${
-                overdue && !task.completed ? 'text-rose-600 font-semibold' : 'text-slate-500'
+                overdue && !task.completed ? 'text-rose-400 font-semibold' : 'text-slate-400'
               }`}
             >
               <Calendar className="w-3.5 h-3.5 stroke-[2]" />
@@ -144,7 +148,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </div>
 
             {task.completed && task.completed_at && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
                 <Clock className="w-3 h-3" />
                 Concluída
               </span>
@@ -154,13 +158,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       </div>
 
       {/* Lado Direito: Ações (Editar & Lixeira) */}
-      <div className="flex items-center justify-end gap-1 mt-3 sm:mt-0 sm:pl-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 shrink-0">
+      <div className="flex items-center justify-end gap-1 mt-3 sm:mt-0 sm:pl-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-white/5 shrink-0">
         {/* Botão de Editar */}
         <button
           onClick={() => onEdit(task)}
           title="Editar tarefa"
           aria-label="Editar tarefa"
-          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors duration-150"
+          className="p-2 text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/10 rounded-xl transition-colors duration-150"
         >
           <Edit3 className="w-4 h-4" />
         </button>
@@ -170,7 +174,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           onClick={() => onDelete(task.id)}
           title="Excluir tarefa"
           aria-label="Excluir tarefa"
-          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors duration-150"
+          className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors duration-150"
         >
           <Trash2 className="w-4 h-4" />
         </button>

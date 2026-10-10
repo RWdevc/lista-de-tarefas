@@ -38,7 +38,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
   onOpenNewTask,
 }) => {
   return (
-    <div className="flex flex-col gap-4 mb-6">
+    <div className="flex flex-col gap-4 mb-6 animate-fade-in">
       {/* Top Bar: Botão Nova Tarefa + Busca + Ações Rápidas */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Campo de Busca */}
@@ -49,12 +49,12 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Buscar tarefas por título ou descrição..."
-            className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200/90 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-soft transition-all"
+            className="w-full pl-10 pr-9 py-2.5 glass-input rounded-xl text-sm placeholder:text-slate-500 shadow-sm"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -64,7 +64,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
         {/* Botão + Nova Tarefa */}
         <button
           onClick={onOpenNewTask}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-semibold text-sm rounded-xl shadow-sm shadow-indigo-200 transition-all"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 btn-gradient-primary text-white font-semibold text-sm rounded-xl shadow-md transition-all shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Nova Tarefa</span>
@@ -72,21 +72,21 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
       </div>
 
       {/* Filter Row: Botões 'Todas', 'Pendentes', 'Concluídas' + Selects de Categoria, Prioridade e Ordenação */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         {/* Filtros de Status (Todas, Pendentes, Concluídas) */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200/60 overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-900/80 rounded-xl border border-white/10 overflow-x-auto backdrop-blur-md">
           <button
             onClick={() => onStatusChange('TODAS')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               statusFilter === 'TODAS'
-                ? 'bg-white text-indigo-600 shadow-sm font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm font-bold'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <span>Todas</span>
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                statusFilter === 'TODAS' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-200 text-slate-600'
+                statusFilter === 'TODAS' ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'
               }`}
             >
               {counts.total}
@@ -97,16 +97,16 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             onClick={() => onStatusChange('PENDENTES')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               statusFilter === 'PENDENTES'
-                ? 'bg-white text-amber-600 shadow-sm font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-amber-600 text-white shadow-sm font-bold'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <span>Pendentes</span>
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] ${
                 statusFilter === 'PENDENTES'
-                  ? 'bg-amber-50 text-amber-700'
-                  : 'bg-slate-200 text-slate-600'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-800 text-slate-400'
               }`}
             >
               {counts.pending}
@@ -117,16 +117,16 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             onClick={() => onStatusChange('CONCLUÍDAS')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               statusFilter === 'CONCLUÍDAS'
-                ? 'bg-white text-emerald-600 shadow-sm font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-emerald-600 text-white shadow-sm font-bold'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <span>Concluídas</span>
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] ${
                 statusFilter === 'CONCLUÍDAS'
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : 'bg-slate-200 text-slate-600'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-slate-800 text-slate-400'
               }`}
             >
               {counts.completed}
@@ -141,11 +141,11 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             <select
               value={categoryFilter}
               onChange={(e) => onCategoryChange(e.target.value)}
-              className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-soft hover:border-slate-300"
+              className="text-xs font-medium text-slate-300 bg-slate-900/80 border border-white/10 rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-sm hover:border-white/20 transition-all"
             >
-              <option value="ALL">Todas Categorias</option>
+              <option value="ALL" className="bg-slate-900 text-slate-200">Todas Categorias</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
+                <option key={cat} value={cat} className="bg-slate-900 text-slate-200">
                   {cat}
                 </option>
               ))}
@@ -157,12 +157,12 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             <select
               value={priorityFilter}
               onChange={(e) => onPriorityChange(e.target.value)}
-              className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-soft hover:border-slate-300"
+              className="text-xs font-medium text-slate-300 bg-slate-900/80 border border-white/10 rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-sm hover:border-white/20 transition-all"
             >
-              <option value="ALL">Todas Prioridades</option>
-              <option value="ALTA">Alta</option>
-              <option value="MÉDIA">Média</option>
-              <option value="BAIXA">Baixa</option>
+              <option value="ALL" className="bg-slate-900 text-slate-200">Todas Prioridades</option>
+              <option value="ALTA" className="bg-slate-900 text-slate-200">Alta</option>
+              <option value="MÉDIA" className="bg-slate-900 text-slate-200">Média</option>
+              <option value="BAIXA" className="bg-slate-900 text-slate-200">Baixa</option>
             </select>
           </div>
 
@@ -171,14 +171,14 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as SortBy)}
-              className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-soft hover:border-slate-300"
+              className="text-xs font-medium text-slate-300 bg-slate-900/80 border border-white/10 rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-sm hover:border-white/20 transition-all"
             >
-              <option value="dueDateAsc">Vencimento (Mais próximo)</option>
-              <option value="dueDateDesc">Vencimento (Mais distante)</option>
-              <option value="priorityHigh">Prioridade (Alta primeiro)</option>
-              <option value="priorityLow">Prioridade (Baixa primeiro)</option>
-              <option value="createdAtDesc">Mais recentes</option>
-              <option value="titleAsc">Alfabética (A-Z)</option>
+              <option value="dueDateAsc" className="bg-slate-900 text-slate-200">Vencimento (Mais próximo)</option>
+              <option value="dueDateDesc" className="bg-slate-900 text-slate-200">Vencimento (Mais distante)</option>
+              <option value="priorityHigh" className="bg-slate-900 text-slate-200">Prioridade (Alta primeiro)</option>
+              <option value="priorityLow" className="bg-slate-900 text-slate-200">Prioridade (Baixa primeiro)</option>
+              <option value="createdAtDesc" className="bg-slate-900 text-slate-200">Mais recentes</option>
+              <option value="titleAsc" className="bg-slate-900 text-slate-200">Alfabética (A-Z)</option>
             </select>
           </div>
         </div>

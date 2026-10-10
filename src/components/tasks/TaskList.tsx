@@ -37,10 +37,11 @@ export const TaskList: React.FC<TaskListProps> = ({
 
   return (
     <div className="space-y-3">
-      {tasks.map((task) => (
+      {tasks.map((task, index) => (
         <TaskCard
           key={task.id}
           task={task}
+          index={index}
           onToggle={onToggle}
           onEdit={onEdit}
           onDelete={onDelete}

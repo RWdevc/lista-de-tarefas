@@ -34,11 +34,11 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           className="sr-only peer"
         />
         <div
-          className={`w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
+          className={`w-5 h-5 rounded-lg border transition-all duration-200 flex items-center justify-center ${
             checked
-              ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm shadow-indigo-200'
-              : 'border-slate-300 bg-white group-hover:border-indigo-400 group-hover:bg-slate-50'
-          } peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2`}
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-400 text-white shadow-md shadow-indigo-600/35'
+              : 'border-white/20 bg-slate-900/80 group-hover:border-indigo-400/60 group-hover:bg-slate-800'
+          } peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-slate-900`}
         >
           <Check
             className={`w-3.5 h-3.5 stroke-[3] transition-transform duration-200 ${
@@ -47,7 +47,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           />
         </div>
       </div>
-      {label && <span className="text-sm text-slate-700">{label}</span>}
+      {label && <span className="text-sm text-slate-300">{label}</span>}
     </label>
   );
 };

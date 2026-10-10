@@ -1,46 +1,15 @@
 import { Task } from '../types/task';
 import { supabase } from './supabase';
 
-const STORAGE_KEY = 'taskflow_tasks_supabase_cache';
+function getStorageKey(userId?: string): string {
+  return userId ? `taskflow_tasks_${userId}` : 'taskflow_tasks_guest';
+}
 
-// Fallback inicial caso não haja dados
-const INITIAL_TASKS: Task[] = [
-  {
-    id: 'task-1',
-    title: 'Desenvolver a nova interface do painel de controle',
-    description: 'Implementar os componentes de estatísticas e gráficos de produtividade utilizando Tailwind CSS.',
-    category: 'TRABALHO',
-    priority: 'ALTA',
-    due_date: new Date(Date.now() + 86400000 * 1).toISOString().split('T')[0],
-    completed: false,
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id: 'task-2',
-    title: 'Revisar módulo de autenticação e permissões',
-    description: 'Verificar tokens JWT e renovação de sessão para o próximo release.',
-    category: 'TRABALHO',
-    priority: 'MÉDIA',
-    due_date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
-    completed: false,
-    created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
-  },
-  {
-    id: 'task-3',
-    title: 'Estudar arquitetura de banco de dados com Supabase',
-    description: 'Ler documentação sobre Row Level Security (RLS) e Realtime subscriptions.',
-    category: 'ESTUDO',
-    priority: 'ALTA',
-    due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
-    completed: false,
-    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-  },
-];
-
-// Helper para normalizar dados vindos do Supabase
+// Normaliza dados vindos do banco de dados PostgreSQL do Supabase
 function formatTaskFromDb(dbTask: any): Task {
   return {
     id: String(dbTask.id),
+    user_id: dbTask.user_id ? String(dbTask.user_id) : undefined,
     title: dbTask.title || '',
     description: dbTask.description || '',
     category: dbTask.category || 'TRABALHO',
@@ -53,19 +22,21 @@ function formatTaskFromDb(dbTask: any): Task {
   };
 }
 
-// Helper para cache local
-function getLocalCache(): Task[] {
+// Gerenciamento de cache local por usuário para resiliência e velocidade
+function getLocalCache(userId?: string): Task[] {
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
+    const key = getStorageKey(userId);
+    const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : [];
   } catch {
     return [];
   }
 }
 
-function setLocalCache(tasks: Task[]): void {
+function setLocalCache(tasks: Task[], userId?: string): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    const key = getStorageKey(userId);
+    localStorage.setItem(key, JSON.stringify(tasks));
   } catch (err) {
     console.error('Erro ao salvar no cache local:', err);
   }
@@ -73,45 +44,48 @@ function setLocalCache(tasks: Task[]): void {
 
 export const TaskService = {
   /**
-   * Busca todas as tarefas diretamente do Supabase
+   * Busca todas as tarefas do usuário autenticado diretamente do Supabase
+   * O isolamento é garantido tanto pelo filtro explícito quanto pelas Políticas de RLS
    */
-  async getTasks(): Promise<Task[]> {
+  async getTasks(userId?: string): Promise<Task[]> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.warn('Erro ao carregar do Supabase, usando cache local:', error.message);
-        const cached = getLocalCache();
-        return cached.length > 0 ? cached : INITIAL_TASKS;
+      if (userId) {
+        query = query.eq('user_id', userId);
       }
 
-      if (data && data.length > 0) {
+      const { data, error } = await query;
+
+      if (error) {
+        console.warn('Aviso ao carregar tarefas do Supabase, utilizando cache local:', error.message);
+        return getLocalCache(userId);
+      }
+
+      if (data) {
         const formatted = data.map(formatTaskFromDb);
-        setLocalCache(formatted);
+        setLocalCache(formatted, userId);
         return formatted;
       }
 
-      // Se não houver tarefas no Supabase, tenta carregar dados padrão
-      const cached = getLocalCache();
-      return cached.length > 0 ? cached : [];
+      return getLocalCache(userId);
     } catch (err) {
       console.error('Erro de conexão com o Supabase:', err);
-      const cached = getLocalCache();
-      return cached.length > 0 ? cached : INITIAL_TASKS;
+      return getLocalCache(userId);
     }
   },
 
   /**
-   * Cria uma nova tarefa no Supabase
+   * Cria uma nova tarefa atribuída ao usuário conectado
    */
-  async createTask(taskData: Omit<Task, 'id' | 'created_at'>): Promise<Task> {
+  async createTask(taskData: Omit<Task, 'id' | 'created_at'>, userId?: string): Promise<Task> {
     const newId = 'task-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
     const nowIso = new Date().toISOString();
 
-    const insertPayload = {
+    const insertPayload: any = {
       id: newId,
       title: taskData.title,
       description: taskData.description || '',
@@ -124,6 +98,10 @@ export const TaskService = {
       updated_at: nowIso,
     };
 
+    if (userId) {
+      insertPayload.user_id = userId;
+    }
+
     try {
       const { data, error } = await supabase
         .from('tasks')
@@ -132,29 +110,29 @@ export const TaskService = {
         .single();
 
       if (error) {
-        console.error('Erro ao inserir no Supabase, salvando localmente:', error);
+        console.error('Erro ao inserir tarefa no Supabase:', error);
       }
 
       const createdTask = data ? formatTaskFromDb(data) : (insertPayload as Task);
-      
-      // Atualiza cache
-      const current = getLocalCache();
-      setLocalCache([createdTask, ...current.filter((t) => t.id !== createdTask.id)]);
+
+      // Atualiza o cache do usuário
+      const current = getLocalCache(userId);
+      setLocalCache([createdTask, ...current.filter((t) => t.id !== createdTask.id)], userId);
 
       return createdTask;
     } catch (err) {
-      console.error('Exceção ao inserir no Supabase:', err);
+      console.error('Exceção ao inserir tarefa no Supabase:', err);
       const fallbackTask: Task = insertPayload as Task;
-      const current = getLocalCache();
-      setLocalCache([fallbackTask, ...current]);
+      const current = getLocalCache(userId);
+      setLocalCache([fallbackTask, ...current], userId);
       return fallbackTask;
     }
   },
 
   /**
-   * Atualiza uma tarefa existente no Supabase
+   * Atualiza os campos de uma tarefa existente
    */
-  async updateTask(id: string, updates: Partial<Task>): Promise<Task | null> {
+  async updateTask(id: string, updates: Partial<Task>, userId?: string): Promise<Task | null> {
     const nowIso = new Date().toISOString();
     const updatePayload: any = {
       ...updates,
@@ -166,19 +144,22 @@ export const TaskService = {
     }
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tasks')
         .update(updatePayload)
-        .eq('id', id)
-        .select()
-        .single();
+        .eq('id', id);
 
-      if (error) {
-        console.error('Erro ao atualizar no Supabase, atualizando localmente:', error);
+      if (userId) {
+        query = query.eq('user_id', userId);
       }
 
-      // Atualiza cache
-      const current = getLocalCache();
+      const { data, error } = await query.select().single();
+
+      if (error) {
+        console.error('Erro ao atualizar tarefa no Supabase:', error);
+      }
+
+      const current = getLocalCache(userId);
       let updatedTask: Task;
 
       if (data) {
@@ -189,15 +170,21 @@ export const TaskService = {
         updatedTask = { ...existing, ...updatePayload };
       }
 
-      setLocalCache(current.map((t) => (t.id === id ? updatedTask : t)));
+      setLocalCache(
+        current.map((t) => (t.id === id ? updatedTask : t)),
+        userId
+      );
       return updatedTask;
     } catch (err) {
-      console.error('Exceção ao atualizar no Supabase:', err);
-      const current = getLocalCache();
+      console.error('Exceção ao atualizar tarefa no Supabase:', err);
+      const current = getLocalCache(userId);
       const existing = current.find((t) => t.id === id);
       if (!existing) return null;
       const fallbackTask: Task = { ...existing, ...updatePayload };
-      setLocalCache(current.map((t) => (t.id === id ? fallbackTask : t)));
+      setLocalCache(
+        current.map((t) => (t.id === id ? fallbackTask : t)),
+        userId
+      );
       return fallbackTask;
     }
   },
@@ -205,38 +192,54 @@ export const TaskService = {
   /**
    * Exclui uma tarefa no Supabase
    */
-  async deleteTask(id: string): Promise<boolean> {
+  async deleteTask(id: string, userId?: string): Promise<boolean> {
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('tasks')
         .delete()
         .eq('id', id);
 
-      if (error) {
-        console.error('Erro ao deletar no Supabase:', error);
+      if (userId) {
+        query = query.eq('user_id', userId);
       }
 
-      // Remove do cache local
-      const current = getLocalCache();
-      setLocalCache(current.filter((t) => t.id !== id));
+      const { error } = await query;
+
+      if (error) {
+        console.error('Erro ao deletar tarefa no Supabase:', error);
+      }
+
+      const current = getLocalCache(userId);
+      setLocalCache(
+        current.filter((t) => t.id !== id),
+        userId
+      );
       return true;
     } catch (err) {
-      console.error('Exceção ao deletar no Supabase:', err);
-      const current = getLocalCache();
-      setLocalCache(current.filter((t) => t.id !== id));
+      console.error('Exceção ao deletar tarefa no Supabase:', err);
+      const current = getLocalCache(userId);
+      setLocalCache(
+        current.filter((t) => t.id !== id),
+        userId
+      );
       return true;
     }
   },
 
   /**
-   * Assina atualizações em tempo real com o Supabase Realtime
+   * Assina eventos em tempo real com o Supabase Realtime
    */
-  subscribeToChanges(onChange: () => void) {
+  subscribeToChanges(userId: string | undefined, onChange: () => void) {
+    const channelName = userId ? `public:tasks_${userId}` : 'public:tasks_all';
     const channel = supabase
-      .channel('public:tasks_changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'tasks' },
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+        },
         () => {
           onChange();
         }
@@ -249,29 +252,42 @@ export const TaskService = {
   },
 
   /**
-   * Restaura/Popula tarefas de exemplo no Supabase
+   * Cria tarefas padrão para um novo usuário começar a usar o app imediatamente
    */
-  async resetToDefault(): Promise<Task[]> {
-    try {
-      // Limpa tabela atual
-      await supabase.from('tasks').delete().neq('id', '___non_existent___');
-      
-      // Insere tarefas padrão
-      const { data, error } = await supabase
-        .from('tasks')
-        .insert(INITIAL_TASKS)
-        .select();
+  async seedInitialTasksForUser(userId: string): Promise<Task[]> {
+    const samples: Omit<Task, 'id' | 'created_at'>[] = [
+      {
+        title: 'Explorar o TaskFlow e configurar meu perfil',
+        description: 'Conheça os recursos de filtragem, prioridades e acompanhamento analítico.',
+        category: 'TRABALHO',
+        priority: 'ALTA',
+        due_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+        completed: false,
+      },
+      {
+        title: 'Criar minha primeira tarefa personalizada',
+        description: 'Clique no botão "+ Nova Tarefa" e defina categoria e prioridade.',
+        category: 'ESTUDO',
+        priority: 'MÉDIA',
+        due_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+        completed: false,
+      },
+      {
+        title: 'Testar a persistência em nuvem com Supabase',
+        description: 'Marque esta tarefa como concluída e observe a sincronização em tempo real.',
+        category: 'PESSOAL',
+        priority: 'BAIXA',
+        due_date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
+        completed: false,
+      },
+    ];
 
-      if (!error && data) {
-        const formatted = data.map(formatTaskFromDb);
-        setLocalCache(formatted);
-        return formatted;
-      }
-    } catch (err) {
-      console.error('Erro ao restaurar no Supabase:', err);
+    const createdList: Task[] = [];
+    for (const sample of samples) {
+      const created = await TaskService.createTask(sample, userId);
+      createdList.push(created);
     }
 
-    setLocalCache(INITIAL_TASKS);
-    return INITIAL_TASKS;
-  }
+    return createdList;
+  },
 };
